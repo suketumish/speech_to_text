@@ -4,19 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Audio Transcription Service | Speech to Text</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --primary: #4361ee;
+            --primary-light: #4cc9f0;
             --primary-dark: #3a56d4;
             --secondary: #3f37c9;
             --success: #4cc9f0;
             --danger: #f72585;
+            --warning: #f8961e;
             --light: #f8f9fa;
             --dark: #212529;
             --gray: #6c757d;
             --light-gray: #e9ecef;
+            --gradient: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --transition-fast: all 0.15s ease;
         }
         
         * {
@@ -32,49 +40,82 @@
             background-color: #f5f7ff;
             padding: 0;
             margin: 0;
+            min-height: 100vh;
         }
         
         .container {
-            max-width: 900px;
+            max-width: 1000px;
             margin: 0 auto;
             padding: 2rem;
+            animation: fadeIn 0.5s ease-out;
         }
         
         header {
             text-align: center;
             margin-bottom: 2.5rem;
             padding-top: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: var(--gradient);
+            border-radius: 2px;
         }
         
         h1 {
-            font-size: 2.5rem;
+            font-size: 2.8rem;
             margin-bottom: 0.5rem;
             color: var(--primary);
-            font-weight: 600;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-block;
         }
         
         .subtitle {
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             color: var(--gray);
             margin-bottom: 1.5rem;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
         }
         
         .card {
             background: white;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
             padding: 2.5rem;
             margin-bottom: 2rem;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(67, 97, 238, 0.15);
         }
         
         .upload-container {
             text-align: center;
-            padding: 2rem;
+            padding: 3rem 2rem;
             border: 2px dashed var(--light-gray);
-            border-radius: 8px;
-            transition: all 0.3s ease;
+            border-radius: 12px;
+            transition: var(--transition);
             margin-bottom: 1.5rem;
             background-color: rgba(248, 249, 250, 0.5);
+            position: relative;
         }
         
         .upload-container:hover {
@@ -85,6 +126,7 @@
         .upload-container.dragover {
             border-color: var(--primary);
             background-color: rgba(67, 97, 238, 0.1);
+            animation: pulse 1.5s infinite;
         }
         
         .file-input {
@@ -96,115 +138,417 @@
             flex-direction: column;
             align-items: center;
             cursor: pointer;
+            position: relative;
+            z-index: 2;
         }
         
         .upload-icon {
-            font-size: 3.5rem;
+            font-size: 4rem;
             color: var(--primary);
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
+            transition: var(--transition);
         }
         
         .upload-text {
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             margin-bottom: 0.5rem;
             font-weight: 500;
+            color: var(--dark);
         }
         
         .upload-hint {
             color: var(--gray);
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             margin-bottom: 1.5rem;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
         }
         
         .btn {
-            background-color: var(--primary);
+            background: var(--gradient);
             color: white;
             border: none;
-            padding: 0.8rem 1.8rem;
-            border-radius: 6px;
+            padding: 0.9rem 2rem;
+            border-radius: 8px;
             font-size: 1rem;
             font-weight: 500;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: var(--transition);
             display: inline-flex;
             align-items: center;
             justify-content: center;
+            box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+            opacity: 0;
+            transition: var(--transition);
         }
         
         .btn:hover {
-            background-color: var(--primary-dark);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(67, 97, 238, 0.4);
+        }
+        
+        .btn:hover::after {
+            opacity: 1;
         }
         
         .btn:disabled {
-            background-color: var(--light-gray);
+            background: var(--light-gray);
             color: var(--gray);
             cursor: not-allowed;
             transform: none;
             box-shadow: none;
         }
         
+        .btn:disabled::after {
+            display: none;
+        }
+        
         .btn i {
             margin-right: 0.5rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .btn span {
+            position: relative;
+            z-index: 1;
         }
         
         .file-info {
             margin: 1.5rem 0;
-            padding: 1rem;
+            padding: 1.5rem;
             background-color: var(--light);
-            border-radius: 8px;
+            border-radius: 12px;
             text-align: left;
+            animation: slideUp 0.4s ease-out;
+            box-shadow: var(--shadow-sm);
         }
         
         .file-info-item {
             display: flex;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.8rem;
+            align-items: center;
         }
         
         .file-info-label {
             font-weight: 500;
             min-width: 80px;
             color: var(--gray);
+            display: flex;
+            align-items: center;
+        }
+        
+        .file-info-label i {
+            margin-right: 0.5rem;
+            font-size: 0.9rem;
         }
         
         .progress-container {
             width: 100%;
             background-color: var(--light-gray);
-            border-radius: 6px;
+            border-radius: 8px;
             margin: 1.5rem 0;
             overflow: hidden;
             display: none;
+            height: 12px;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.3s ease-out;
         }
         
         .progress-bar {
             width: 0%;
-            height: 10px;
-            background-color: var(--success);
-            transition: width 0.3s ease;
+            height: 100%;
+            background: var(--gradient);
+            transition: width 0.5s cubic-bezier(0.65, 0, 0.35, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(
+                90deg,
+                rgba(255, 255, 255, 0) 0%,
+                rgba(255, 255, 255, 0.6) 50%,
+                rgba(255, 255, 255, 0) 100%
+            );
+            animation: shimmer 2s infinite;
         }
         
         .progress-text {
             text-align: center;
-            font-size: 0.8rem;
+            font-size: 0.9rem;
             color: var(--gray);
-            margin-top: 0.5rem;
+            margin-top: 0.8rem;
+            font-weight: 500;
         }
         
         .loading {
             display: none;
             text-align: center;
             margin: 1.5rem 0;
+            animation: fadeIn 0.3s ease-out;
         }
         
         .spinner {
-            border: 3px solid rgba(67, 97, 238, 0.1);
-            border-top: 3px solid var(--primary);
+            border: 4px solid rgba(67, 97, 238, 0.1);
+            border-top: 4px solid var(--primary);
             border-radius: 50%;
-            width: 30px;
-            height: 30px;
+            width: 40px;
+            height: 40px;
             animation: spin 1s linear infinite;
-            margin: 0 auto 1rem;
+            margin: 0 auto 1.5rem;
+            position: relative;
+        }
+        
+        .spinner::after {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            right: -4px;
+            bottom: -4px;
+            border: 4px solid transparent;
+            border-top: 4px solid var(--primary-light);
+            border-radius: 50%;
+            animation: spin 1.5s linear infinite reverse;
+        }
+        
+        .result-container {
+            margin-top: 2rem;
+            animation: fadeInUp 0.5s ease-out;
+        }
+        
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .result-title {
+            font-size: 1.6rem;
+            color: var(--primary);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+        
+        .result-title i {
+            margin-right: 0.8rem;
+            font-size: 1.4rem;
+        }
+        
+        .copy-btn {
+            background-color: var(--light);
+            color: var(--primary);
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .copy-btn:hover {
+            background-color: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.2);
+        }
+        
+        .result-content {
+            background-color: var(--light);
+            padding: 2rem;
+            border-radius: 12px;
+            white-space: pre-wrap;
+            text-align: left;
+            max-height: 400px;
+            overflow-y: auto;
+            box-shadow: var(--shadow-sm);
+            line-height: 1.7;
+            position: relative;
+        }
+        
+        .result-content::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .result-content::-webkit-scrollbar-track {
+            background: var(--light-gray);
+            border-radius: 4px;
+        }
+        
+        .result-content::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 4px;
+        }
+        
+        .success-message {
+            color: var(--success);
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .success-message i {
+            margin-right: 0.6rem;
+            font-size: 1.2rem;
+        }
+        
+        .error-message {
+            color: var(--danger);
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .error-message i {
+            margin-right: 0.6rem;
+            font-size: 1.2rem;
+        }
+        
+        .supported-formats {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.6rem;
+            margin-top: 1.5rem;
+        }
+        
+        .format-tag {
+            background-color: var(--light);
+            color: var(--primary);
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: var(--transition-fast);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .format-tag:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(67, 97, 238, 0.1);
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .feature {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .feature:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(67, 97, 238, 0.15);
+        }
+        
+        .feature::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--gradient);
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: inline-block;
+        }
+        
+        .feature-title {
+            font-weight: 600;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+            color: var(--dark);
+        }
+        
+        .feature-desc {
+            color: var(--gray);
+            font-size: 0.95rem;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 4rem;
+            padding: 2rem;
+            color: var(--gray);
+            font-size: 0.95rem;
+        }
+        
+        footer p {
+            animation: fadeIn 1s ease-out;
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
         
         @keyframes spin {
@@ -212,131 +556,123 @@
             100% { transform: rotate(360deg); }
         }
         
-        .result-container {
-            margin-top: 2rem;
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(67, 97, 238, 0.2); }
+            70% { box-shadow: 0 0 0 10px rgba(67, 97, 238, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(67, 97, 238, 0); }
         }
         
-        .result-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
         }
         
-        .result-title {
-            font-size: 1.5rem;
-            color: var(--primary);
+        /* Floating animation for upload icon */
+        .upload-icon {
+            animation: float 3s ease-in-out infinite;
         }
         
-        .copy-btn {
-            background-color: var(--light);
-            color: var(--primary);
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
         }
         
-        .copy-btn:hover {
-            background-color: var(--primary);
-            color: white;
+        /* Tooltip */
+        .tooltip {
+            position: relative;
+            display: inline-block;
         }
         
-        .result-content {
-            background-color: var(--light);
-            padding: 1.5rem;
-            border-radius: 8px;
-            white-space: pre-wrap;
-            text-align: left;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-        
-        .success-message {
-            color: var(--success);
-            font-weight: 500;
-            margin-bottom: 0.5rem;
-        }
-        
-        .error-message {
-            color: var(--danger);
-            font-weight: 500;
-            margin-bottom: 1rem;
-        }
-        
-        .supported-formats {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 0.5rem;
-            margin-top: 1rem;
-        }
-        
-        .format-tag {
-            background-color: var(--light);
-            color: var(--primary);
-            padding: 0.3rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 500;
-        }
-        
-        .features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-top: 2rem;
-        }
-        
-        .feature {
-            background-color: white;
-            padding: 1.5rem;
-            border-radius: 8px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-        }
-        
-        .feature-icon {
-            font-size: 1.8rem;
-            color: var(--primary);
-            margin-bottom: 1rem;
-        }
-        
-        .feature-title {
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-        
-        .feature-desc {
-            color: var(--gray);
-            font-size: 0.9rem;
-        }
-        
-        footer {
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 120px;
+            background-color: var(--dark);
+            color: #fff;
             text-align: center;
-            margin-top: 3rem;
-            padding: 1.5rem;
-            color: var(--gray);
-            font-size: 0.9rem;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: var(--transition);
+            font-size: 0.8rem;
+            font-weight: normal;
         }
         
+        .tooltip .tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: var(--dark) transparent transparent transparent;
+        }
+        
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        /* Responsive styles */
         @media (max-width: 768px) {
             .container {
                 padding: 1.5rem;
             }
             
             h1 {
-                font-size: 2rem;
+                font-size: 2.2rem;
+            }
+            
+            .subtitle {
+                font-size: 1rem;
+            }
+            
+            .card {
+                padding: 1.8rem;
+            }
+            
+            .upload-container {
+                padding: 2rem 1.5rem;
+            }
+            
+            .upload-text {
+                font-size: 1.1rem;
+            }
+            
+            .features {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.8rem;
             }
             
             .card {
                 padding: 1.5rem;
             }
             
-            .upload-container {
-                padding: 1.5rem;
+            .btn {
+                padding: 0.8rem 1.5rem;
+                font-size: 0.9rem;
+            }
+            
+            .result-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .copy-btn {
+                width: 100%;
+                justify-content: center;
             }
         }
     </style>
@@ -345,43 +681,43 @@
     <div class="container">
         <header>
             <h1>Audio Transcription Service</h1>
-            <p class="subtitle">Convert your audio files to text with high accuracy</p>
+            <p class="subtitle">Convert your audio files to text with high accuracy using our advanced speech recognition technology</p>
         </header>
         
         <div class="card">
             <div class="upload-container" id="dropZone">
-                <input type="file" id="audioFile" class="file-input" accept=".wav,.mp3,.ogg,.flac,.m4a,.aac,.mp4,.mov">
+                <input type="file" id="audioFile" class="file-input" accept=".wav,.mp3,.ogg,.flac,.m4a,.aac,.mp4,.mov,.wma,.amr,.aiff">
                 <label for="audioFile" class="upload-label">
                     <div class="upload-icon">
                         <i class="fas fa-microphone-alt"></i>
                     </div>
                     <div class="upload-text">Select or drop your audio file</div>
-                    <div class="upload-hint">Supports WAV, MP3, OGG, FLAC, M4A, AAC, MP4 (max 20MB)</div>
+                    <div class="upload-hint">Supports WAV, MP3, OGG, FLAC, M4A, AAC, MP4, MOV and more (max 25MB)</div>
                     <button class="btn">
-                        <i class="fas fa-upload"></i> Choose File
+                        <i class="fas fa-upload"></i> <span>Choose File</span>
                     </button>
                 </label>
             </div>
             
             <div class="file-info" id="fileInfo" style="display: none;">
                 <div class="file-info-item">
-                    <span class="file-info-label">File:</span>
+                    <span class="file-info-label"><i class="fas fa-file-alt"></i> File:</span>
                     <span id="fileName"></span>
                 </div>
                 <div class="file-info-item">
-                    <span class="file-info-label">Size:</span>
+                    <span class="file-info-label"><i class="fas fa-weight-hanging"></i> Size:</span>
                     <span id="fileSize"></span>
                 </div>
                 <div class="file-info-item">
-                    <span class="file-info-label">Type:</span>
+                    <span class="file-info-label"><i class="fas fa-file-code"></i> Type:</span>
                     <span id="fileType"></span>
                 </div>
             </div>
             
             <div class="progress-container" id="progressContainer">
                 <div class="progress-bar" id="progressBar"></div>
-                <div class="progress-text" id="progressText">Uploading: 0%</div>
             </div>
+            <div class="progress-text" id="progressText">Uploading: 0%</div>
             
             <div class="loading" id="loading">
                 <div class="spinner"></div>
@@ -389,26 +725,51 @@
             </div>
             
             <button class="btn" id="convertBtn" onclick="uploadFile()" disabled>
-                <i class="fas fa-language"></i> Transcribe Audio
+                <i class="fas fa-language"></i> <span>Transcribe Audio</span>
             </button>
             
             <div class="supported-formats">
-                <span class="format-tag">WAV</span>
-                <span class="format-tag">MP3</span>
-                <span class="format-tag">OGG</span>
-                <span class="format-tag">FLAC</span>
-                <span class="format-tag">M4A</span>
-                <span class="format-tag">AAC</span>
-                <span class="format-tag">MP4</span>
-                <span class="format-tag">MOV</span>
+                <span class="format-tag tooltip">
+                    WAV<span class="tooltiptext">Waveform Audio File</span>
+                </span>
+                <span class="format-tag tooltip">
+                    MP3<span class="tooltiptext">MPEG Audio Layer III</span>
+                </span>
+                <span class="format-tag tooltip">
+                    OGG<span class="tooltiptext">Ogg Vorbis Audio</span>
+                </span>
+                <span class="format-tag tooltip">
+                    FLAC<span class="tooltiptext">Free Lossless Audio Codec</span>
+                </span>
+                <span class="format-tag tooltip">
+                    M4A<span class="tooltiptext">MPEG-4 Audio</span>
+                </span>
+                <span class="format-tag tooltip">
+                    AAC<span class="tooltiptext">Advanced Audio Coding</span>
+                </span>
+                <span class="format-tag tooltip">
+                    MP4<span class="tooltiptext">MPEG-4 Video</span>
+                </span>
+                <span class="format-tag tooltip">
+                    MOV<span class="tooltiptext">QuickTime Movie</span>
+                </span>
+                <span class="format-tag tooltip">
+                    WMA<span class="tooltiptext">Windows Media Audio</span>
+                </span>
+                <span class="format-tag tooltip">
+                    AMR<span class="tooltiptext">Adaptive Multi-Rate</span>
+                </span>
+                <span class="format-tag tooltip">
+                    AIFF<span class="tooltiptext">Audio Interchange File</span>
+                </span>
             </div>
         </div>
         
         <div class="result-container" id="resultContainer" style="display: none;">
             <div class="result-header">
-                <h2 class="result-title">Transcription Result</h2>
+                <h2 class="result-title"><i class="fas fa-scroll"></i> Transcription Result</h2>
                 <button class="copy-btn" id="copyBtn" onclick="copyToClipboard()">
-                    <i class="far fa-copy"></i> Copy
+                    <i class="far fa-copy"></i> Copy Text
                 </button>
             </div>
             <div class="result-content" id="resultContent"></div>
@@ -420,7 +781,7 @@
                     <i class="fas fa-bolt"></i>
                 </div>
                 <h3 class="feature-title">Fast Processing</h3>
-                <p class="feature-desc">Get your transcriptions in seconds with our optimized processing engine.</p>
+                <p class="feature-desc">Get your transcriptions in seconds with our optimized processing engine that handles files up to 25MB.</p>
             </div>
             
             <div class="feature">
@@ -428,7 +789,7 @@
                     <i class="fas fa-file-audio"></i>
                 </div>
                 <h3 class="feature-title">Multiple Formats</h3>
-                <p class="feature-desc">Supports all popular audio and video formats including MP4 videos.</p>
+                <p class="feature-desc">Supports all popular audio and video formats including MP4, MOV videos and lossless formats.</p>
             </div>
             
             <div class="feature">
@@ -436,13 +797,13 @@
                     <i class="fas fa-shield-alt"></i>
                 </div>
                 <h3 class="feature-title">Secure & Private</h3>
-                <p class="feature-desc">Your files are processed securely and never stored permanently.</p>
+                <p class="feature-desc">Your files are processed securely and automatically deleted after transcription for your privacy.</p>
             </div>
         </div>
     </div>
     
     <footer>
-        <p>Audio Transcription Service &copy; 2023 | All Rights Reserved</p>
+        <p>Audio Transcription Service &copy; <span id="currentYear"></span> | All Rights Reserved</p>
     </footer>
     
     <script>
@@ -461,7 +822,10 @@
         const dropZone = document.getElementById('dropZone');
         const copyBtn = document.getElementById('copyBtn');
         
-        // Drag and drop functionality
+        // Set current year in footer
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+        
+        // Drag and drop functionality with animations
         dropZone.addEventListener('dragover', (e) => {
             e.preventDefault();
             dropZone.classList.add('dragover');
@@ -493,7 +857,7 @@
             }
             
             // Client-side validation
-            const validExtensions = ['wav', 'mp3', 'ogg', 'flac', 'm4a', 'aac', 'mp4', 'mov'];
+            const validExtensions = ['wav', 'mp3', 'ogg', 'flac', 'm4a', 'aac', 'mp4', 'mov', 'wma', 'amr', 'aiff'];
             const fileExt = file.name.split('.').pop().toLowerCase();
             
             if (!validExtensions.includes(fileExt)) {
@@ -502,11 +866,11 @@
                 return;
             }
             
-            if (file.size > 20 * 1024 * 1024) {
-                showError(`File too large (${formatFileSize(file.size)} > 20MB limit)`);
+            if (file.size > 25 * 1024 * 1024) {
+                showError(`File too large (${formatFileSize(file.size)} > 25MB limit)`);
                 convertBtn.disabled = true;
             } else {
-                // Show file info
+                // Show file info with animation
                 fileName.textContent = file.name;
                 fileSize.textContent = formatFileSize(file.size);
                 fileType.textContent = file.type || fileExt.toUpperCase();
@@ -523,7 +887,7 @@
             const k = 1024;
             const sizes = ['Bytes', 'KB', 'MB', 'GB'];
             const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2) + ' ' + sizes[i];
         }
         
         function showError(message) {
@@ -533,6 +897,11 @@
                 </div>
             `;
             fileInfo.style.display = 'block';
+            fileInfo.style.animation = 'shake 0.5s';
+            
+            setTimeout(() => {
+                fileInfo.style.animation = '';
+            }, 500);
         }
         
         function uploadFile() {
@@ -546,6 +915,9 @@
             progressContainer.style.display = 'block';
             progressBar.style.width = '0%';
             progressText.textContent = 'Uploading: 0%';
+            
+            // Add loading animation to button
+            convertBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Processing...</span>';
 
             const formData = new FormData();
             formData.append('file', file);
@@ -557,6 +929,11 @@
                     const percentComplete = Math.round((e.loaded / e.total) * 100);
                     progressBar.style.width = percentComplete + '%';
                     progressText.textContent = `Uploading: ${percentComplete}%`;
+                    
+                    // Change to processing at 100%
+                    if (percentComplete === 100) {
+                        progressText.textContent = 'Processing file...';
+                    }
                 }
             };
             
@@ -565,19 +942,23 @@
                     const data = JSON.parse(xhr.responseText);
                     showResult(data);
                 } else {
-                    let errorMsg = 'An error occurred';
+                    let errorMsg = 'An error occurred during processing';
                     try {
                         const errorData = JSON.parse(xhr.responseText);
                         errorMsg = errorData.error || errorMsg;
                     } catch (e) {
-                        errorMsg = xhr.statusText;
+                        errorMsg = xhr.statusText || errorMsg;
                     }
                     showErrorResult(errorMsg);
                 }
+                
+                // Reset button
+                convertBtn.innerHTML = '<i class="fas fa-language"></i> <span>Transcribe Audio</span>';
             };
             
             xhr.onerror = function() {
-                showErrorResult('Network error. Please check your connection.');
+                showErrorResult('Network error. Please check your connection and try again.');
+                convertBtn.innerHTML = '<i class="fas fa-language"></i> <span>Transcribe Audio</span>';
             };
             
             xhr.open('POST', '/upload', true);
@@ -589,21 +970,41 @@
             progressContainer.style.display = 'none';
             convertBtn.disabled = false;
             
+            // Format transcription with paragraphs if it contains newlines
+            let formattedTranscription = data.transcription;
+            if (data.transcription.includes('\n')) {
+                formattedTranscription = data.transcription.split('\n').map(para => `<p>${para}</p>`).join('');
+            }
+            
             resultContent.innerHTML = `
                 <p class="success-message">
-                    <i class="fas fa-check-circle"></i> ${data.message}
+                    <i class="fas fa-check-circle"></i> Transcription completed successfully!
                 </p>
                 <div class="file-info-item">
-                    <span class="file-info-label">File:</span>
+                    <span class="file-info-label"><i class="fas fa-file-alt"></i> File:</span>
                     <span>${data.filename}</span>
                 </div>
                 <div class="file-info-item">
-                    <span class="file-info-label">Transcription:</span>
+                    <span class="file-info-label"><i class="fas fa-clock"></i> Processing Time:</span>
+                    <span>${data.processingTime || 'Less than a minute'}</span>
                 </div>
-                <p>${data.transcription}</p>
+                <div class="file-info-item">
+                    <span class="file-info-label"><i class="fas fa-scroll"></i> Transcription:</span>
+                </div>
+                ${formattedTranscription}
+                <div style="margin-top: 1.5rem; text-align: center;">
+                    <button class="btn" onclick="downloadTranscript()" style="margin-top: 1rem;">
+                        <i class="fas fa-download"></i> <span>Download Transcript</span>
+                    </button>
+                </div>
             `;
             
             resultContainer.style.display = 'block';
+            
+            // Scroll to results smoothly
+            setTimeout(() => {
+                resultContainer.scrollIntoView({ behavior: 'smooth' });
+            }, 300);
         }
         
         function showErrorResult(errorMsg) {
@@ -613,18 +1014,25 @@
             
             resultContent.innerHTML = `
                 <p class="error-message">
-                    <i class="fas fa-exclamation-circle"></i> Error: ${errorMsg}
+                    <i class="fas fa-exclamation-circle"></i> ${errorMsg}
                 </p>
                 <p>Try these solutions:</p>
-                <ul>
-                    <li>Use a shorter audio clip (under 1 minute)</li>
+                <ul style="margin-left: 1.5rem; margin-bottom: 1.5rem;">
+                    <li>Use a shorter audio clip (under 5 minutes for best results)</li>
                     <li>Ensure clear speech with minimal background noise</li>
-                    <li>Try WAV or MP3 format for best results</li>
-                    <li>Check your internet connection</li>
+                    <li>Try WAV or MP3 format for best compatibility</li>
+                    <li>Check your internet connection and try again</li>
+                    <li>Make sure the file is not password protected</li>
                 </ul>
+                <p>If the problem persists, please try again later or contact support.</p>
             `;
             
             resultContainer.style.display = 'block';
+            resultContainer.style.animation = 'shake 0.5s';
+            
+            setTimeout(() => {
+                resultContainer.style.animation = '';
+            }, 500);
         }
         
         function copyToClipboard() {
@@ -632,25 +1040,103 @@
             navigator.clipboard.writeText(text).then(() => {
                 const originalText = copyBtn.innerHTML;
                 copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                copyBtn.style.backgroundColor = 'var(--success)';
+                copyBtn.style.color = 'white';
+                
                 setTimeout(() => {
                     copyBtn.innerHTML = originalText;
+                    copyBtn.style.backgroundColor = '';
+                    copyBtn.style.color = '';
                 }, 2000);
             }).catch(err => {
                 console.error('Failed to copy text: ', err);
+                copyBtn.innerHTML = '<i class="fas fa-times"></i> Failed';
+                copyBtn.style.backgroundColor = 'var(--danger)';
+                copyBtn.style.color = 'white';
+                
+                setTimeout(() => {
+                    copyBtn.innerHTML = '<i class="far fa-copy"></i> Copy Text';
+                    copyBtn.style.backgroundColor = '';
+                    copyBtn.style.color = '';
+                }, 2000);
             });
         }
         
-        // Check server health on page load
+        function downloadTranscript() {
+            const text = resultContent.textContent;
+            const filename = fileInput.files[0]?.name.replace(/\.[^/.]+$/, "") || 'transcript';
+            const blob = new Blob([text], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${filename}_transcript.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        
+        // Check server health on page load with animation
         window.addEventListener('load', function() {
+            const healthCheck = document.createElement('div');
+            healthCheck.style.position = 'fixed';
+            healthCheck.style.bottom = '20px';
+            healthCheck.style.right = '20px';
+            healthCheck.style.padding = '10px 15px';
+            healthCheck.style.backgroundColor = 'var(--primary)';
+            healthCheck.style.color = 'white';
+            healthCheck.style.borderRadius = '8px';
+            healthCheck.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+            healthCheck.style.zIndex = '1000';
+            healthCheck.style.transform = 'translateY(100px)';
+            healthCheck.style.opacity = '0';
+            healthCheck.style.transition = 'all 0.5s ease';
+            healthCheck.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking service status...';
+            document.body.appendChild(healthCheck);
+            
+            setTimeout(() => {
+                healthCheck.style.transform = 'translateY(0)';
+                healthCheck.style.opacity = '1';
+            }, 1000);
+            
             fetch('/health')
                 .then(response => response.json())
                 .then(data => {
-                    console.log('Server health:', data);
+                    healthCheck.innerHTML = '<i class="fas fa-check-circle"></i> Service is online and ready';
+                    healthCheck.style.backgroundColor = 'var(--success)';
+                    
+                    setTimeout(() => {
+                        healthCheck.style.transform = 'translateY(100px)';
+                        healthCheck.style.opacity = '0';
+                        setTimeout(() => {
+                            document.body.removeChild(healthCheck);
+                        }, 500);
+                    }, 3000);
                 })
                 .catch(err => {
-                    console.error('Health check failed:', err);
+                    healthCheck.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Service connection issue';
+                    healthCheck.style.backgroundColor = 'var(--warning)';
+                    
+                    setTimeout(() => {
+                        healthCheck.style.transform = 'translateY(100px)';
+                        healthCheck.style.opacity = '0';
+                        setTimeout(() => {
+                            document.body.removeChild(healthCheck);
+                        }, 500);
+                    }, 3000);
                 });
         });
+        
+        // Add shake animation for errors
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+                20%, 40%, 60%, 80% { transform: translateX(5px); }
+            }
+        `;
+        document.head.appendChild(style);
     </script>
 </body>
 </html>
