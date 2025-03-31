@@ -1,8 +1,9 @@
+![sakethh](https://github.com/user-attachments/assets/9f4d9171-0099-41d0-bb1f-d647c730484f)
 # Audio Transcription Service
 
 A Flask-based web application that converts audio files (including MP3, WAV, MP4) to text using speech recognition and stores results in MongoDB.
 
-![Project Screenshot](/screenshot.png) <!-- Add a screenshot if available -->
+![Project Screenshot](/sakethh.png) <!-- Add a screenshot if available -->
 
 ## Features
 
